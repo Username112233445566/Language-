@@ -2,20 +2,19 @@ from django.urls import path
 from .views import (
     RegisterTemplateView,
     LoginTemplateView,
-    CardListTemplateView,
-    CardDetailTemplateView,
+    CardCreateTemplateView,
     RegisterView,
     CardListView,
-    CardDetailView,
+    CardListTemplateView,
 )
 
 urlpatterns = [
-    # Карточки
+    # Регистрация
+    path('reg/', RegisterView.as_view(), name='register'),
     path('cards/', CardListView.as_view(), name='card_list'),
-    path('cards/<int:pk>/', CardDetailView.as_view(), name='card_detail'),
 
+    path('cards_list/', CardListTemplateView.as_view(), name='card_list'),
     path('register/', RegisterTemplateView.as_view(), name='register_template'),
     path('login/', LoginTemplateView.as_view(), name='login_template'),
-    path('cards_list/', CardListTemplateView.as_view(), name='cards_list_template'),
-    path('card/<int:pk>/', CardDetailTemplateView.as_view(), name='card_detail_template'),
+    path('cards_create/', CardCreateTemplateView.as_view(), name='cards_list_template'),
 ]

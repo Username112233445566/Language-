@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карточки</title>
+</head>
+<body>
+    <h1>Карточки</h1>
+    <div id="cardsList"></div>
+    <p id="message" style="color: red;"></p>
+
+    <script>
+        // Функция для загрузки карточек
+        async function fetchCards() {
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    throw new Error('Токен отсутствует. Пожалуйста, войдите в систему.');
+                }
+
+                const response = await fetch('/api/cards/', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('Авторизация истекла. Пожалуйста, войдите снова.');
+                    }
+                    throw new Error('Ошибка при загрузке карточек.');
+                }
+
+                const data = await response.json();
+                const cardsList = document.getElementById('cardsList');
+                cardsList.innerHTML = '';
+
+                if (data.length === 0) {
+                    cardsList.innerHTML = '<p>Карточек пока нет.</p>';
+                } else {
+                    data.forEach(card => {
+                        const cardElement = document.createElement('div');
+                        cardElement.innerHTML = `
+                            <h2>${card.word}</h2>
+                            <p><strong>Перевод:</strong> ${card.translation}</p>
+                            <p><strong>Пример:</strong> ${card.example}</p>
+                            <button onclick="markKnow(${card.id})">Знаю</button>
+                            <button onclick="markDontKnow(${card.id})">Не знаю</button>
+                        `;
+                        cardsList.appendChild(cardElement);
+                    });
+                }
+            } catch (error) {
+                document.getElementById('message').innerText = error.message;
+            }
+        }
+
+        // Отметить карточку как "Знаю"
+        async function markKnow(cardId) {
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    throw new Error('Токен отсутствует. Пожалуйста, войдите в систему.');
+                }
+
+                const response = await fetch(`/api/cards/${cardId}/`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({ is_correct: true })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка при сохранении ответа.');
+                }
+
+                alert('Ответ сохранен как "Знаю".');
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // Отметить карточку как "Не знаю"
+        async function markDontKnow(cardId) {
+            try {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    throw new Error('Токен отсутствует. Пожалуйста, войдите в систему.');
+                }
+
+                const response = await fetch(`/api/cards/${cardId}/`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json' 
+                    },
+                    body: JSON.stringify({ is_correct: false })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка при сохранении ответа.');
+                }
+
+                alert('Ответ сохранен как "Не знаю".');
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // Загружаем карточки при загрузке страницы
+        fetchCards();
+    </script>
+</body>
+</html>

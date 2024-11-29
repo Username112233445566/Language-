@@ -16,43 +16,10 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CardListView(generics.ListAPIView):
+class CardListView(generics.ListCreateAPIView):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
-    permission_classes = [IsAuthenticated]  # Только для аутентифицированных пользователей
 
-
-class CardDetailView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, pk):
-        try:
-            card = Card.objects.get(pk=pk)
-            return Response({
-                "word": card.word,
-                "translation": card.translation,
-                "example": card.example,
-            })
-        except Card.DoesNotExist:
-            return Response({"error": "Card not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    def post(self, request, pk):
-        try:
-            card = Card.objects.get(pk=pk)
-            is_correct = request.data.get("is_correct", False)
-
-            # Обновляем статистику пользователя
-            correct = request.user.correct
-            if is_correct:
-                correct.last_correct = correct.correct
-                correct.correct += 1
-            else:
-                correct.last_correct = correct.correct
-            correct.save()
-
-            return Response({"message": "Answer recorded"})
-        except Card.DoesNotExist:
-            return Response({"error": "Card not found"}, status=status.HTTP_404_NOT_FOUND)
 
 # Шаблон регистрации
 class RegisterTemplateView(APIView):
@@ -69,10 +36,9 @@ class LoginTemplateView(APIView):
 # Шаблон списка карточек
 class CardListTemplateView(APIView):
     def get(self, request):
-        return render(request, 'cards_list.html')
+        return render(request, 'cards.html')
+    
 
-
-# Шаблон карточки
-class CardDetailTemplateView(APIView):
-    def get(self, request, pk):
-        return render(request, 'card_detail.html', {'card_id': pk})
+class CardCreateTemplateView(APIView):
+    def get(self, request):
+        return render(request, 'create_card.html')

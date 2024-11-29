@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание карточки</title>
+</head>
+<body>
+    <h1>Создать карточку</h1>
+    <form id="createCardForm">
+        <label for="word">Слово:</label>
+        <input type="text" id="word" name="word" required><br><br>
+
+        <label for="translation">Перевод:</label>
+        <input type="text" id="translation" name="translation" required><br><br>
+
+        <label for="example">Пример:</label>
+        <textarea id="example" name="example" required></textarea><br><br>
+
+        <button type="submit">Создать карточку</button>
+    </form>
+    <p id="message"></p>
+
+    <script>
+        document.getElementById('createCardForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const word = document.getElementById('word').value;
+            const translation = document.getElementById('translation').value;
+            const example = document.getElementById('example').value;
+
+            const response = await fetch('/api/cards/', {
+                method: 'POST',
+                headers: { 
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({ word, translation, example })
+            });
+
+            if (response.ok) {
+                document.getElementById('message').innerText = 'Карточка успешно создана!';
+                // Можно сделать редирект на страницу карточек или очистить форму
+                document.getElementById('createCardForm').reset();
+            } else {
+                const data = await response.json();
+                document.getElementById('message').innerText = data.detail || 'Ошибка создания карточки';
+            }
+        });
+    </script>
+</body>
+</html>

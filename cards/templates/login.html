@@ -30,9 +30,12 @@
 
             const data = await response.json();
             if (response.ok) {
+                // Сохраняем токены в localStorage
                 localStorage.setItem('access_token', data.access);
                 localStorage.setItem('refresh_token', data.refresh);
-                document.getElementById('message').innerText = 'Вход успешен!';
+                
+                // Редиректим на страницу карточек
+                window.location.href = "/api/cards_list/";
             } else {
                 document.getElementById('message').innerText = data.detail || 'Ошибка входа';
             }
@@ -40,4 +43,3 @@
     </script>
 </body>
 </html>
-    
