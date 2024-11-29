@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+</head>
+<body>
+    <h1>Вход</h1>
+    <form id="loginForm">
+        <label for="username">Имя пользователя:</label>
+        <input type="text" id="username" name="username" required><br>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password" required><br>
+        <button type="submit">Войти</button>
+    </form>
+    <p id="message"></p>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/api/token/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+                document.getElementById('message').innerText = 'Вход успешен!';
+            } else {
+                document.getElementById('message').innerText = data.detail || 'Ошибка входа';
+            }
+        });
+    </script>
+</body>
+</html>
+    

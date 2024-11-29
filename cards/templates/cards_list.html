@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карточки</title>
+</head>
+<body>
+    <h1>Список карточек</h1>
+    <ul id="cardsList"></ul>
+    <p id="message"></p>
+
+    <script>
+        async function fetchCards() {
+            const response = await fetch('/cards/', {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
+            });
+            const data = await response.json();
+            if (response.ok) {
+                const cardsList = document.getElementById('cardsList');
+                cardsList.innerHTML = '';
+                data.forEach(card => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="/cards/${card.id}/">${card.word}</a>`;
+                    cardsList.appendChild(li);
+                });
+            } else {
+                document.getElementById('message').innerText = 'Не удалось загрузить карточки';
+            }
+        }
+
+        fetchCards();
+    </script>
+</body>
+</html>
