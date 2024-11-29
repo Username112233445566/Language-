@@ -7,21 +7,18 @@ class CardSerializer(serializers.ModelSerializer):
         model = Card
         fields = '__all__'
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['username', 'password']
 
-    # Хэшируем пароль при создании пользователя
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password']
         )
-        Correct.objects.create(user=user)  # Создаем статистику для нового пользователя
+        Correct.objects.create(user=user)
         return user
-
 
 class CorrectSerializer(serializers.ModelSerializer):
     class Meta:

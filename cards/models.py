@@ -9,7 +9,6 @@ class Card(models.Model):
     def __str__(self):
         return self.word
 
-
 class Correct(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='correct')
     last_correct = models.IntegerField(default=0)

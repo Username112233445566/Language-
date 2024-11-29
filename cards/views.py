@@ -4,7 +4,7 @@ from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import render
 from .models import Card
-from .serializers import CardSerializer, UserSerializer, CorrectSerializer
+from .serializers import CardSerializer, UserSerializer
 
 
 class RegisterView(APIView):
@@ -17,23 +17,21 @@ class RegisterView(APIView):
 
 
 class CardListView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = Card.objects.all()
     serializer_class = CardSerializer
 
 
-# Шаблон регистрации
 class RegisterTemplateView(APIView):
     def get(self, request):
         return render(request, 'register.html')
 
 
-# Шаблон входа
 class LoginTemplateView(APIView):
     def get(self, request):
         return render(request, 'login.html')
 
 
-# Шаблон списка карточек
 class CardListTemplateView(APIView):
     def get(self, request):
         return render(request, 'cards.html')
